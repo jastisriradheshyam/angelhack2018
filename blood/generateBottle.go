@@ -70,8 +70,8 @@ func (t *SimpleChaincode) RespondToRequest(stub shim.ChaincodeStubInterface) pb.
 
 	if response == RESPONSE_CANCEL{
 
-	User.Giving = append(User.Giving[:i], User.Giving[i+1:]...)
-	Taker.Asking = append(Taker.Asking[:i], Taker.Asking[i+1:]...)
+	User.Giving = append(User.Giving[:index], User.Giving[index+1:]...)
+	Taker.Asking = append(Taker.Asking[:index], Taker.Asking[index+1:]...)
 
 	finalUserAsBytes,err := json.Marshal(User)
 	if err!=nil{
@@ -110,13 +110,56 @@ func (t *SimpleChaincode) RespondToRequest(stub shim.ChaincodeStubInterface) pb.
 					return shim.Error("COULDNT MARSHAL BOTTLE",err.Error())
 				}
 				Bottle.CurrentOwner = takerId
-				Bottle.Trail += "BOTTLE HAS BEEN TRANSFERED TO "+ takerId.ContactPerson;
+				Bottle.Trail += "BOTTLE HAS BEEN TRANSFERED TO "+ takerId.ContactPerson+" from "+ User.ContactPerson
 				User.CurrentStock[bloodGroup].BottleMap = append(User.CurrentStock[bloodGroup].BottleMap[:0], User.CurrentStock[bloodGroup].BottleMap[1:]...)
+				User.CurrentStock[bloodGroup].Count--;
+				
+				Taker.CurrentStock[bloodGroup].BottleMap = append(Taker.CurrentStock[bloodGroup].BottleMap,bottleId)
+				User.CurrentStock[bloodGroup].Count++
 				
 
 
 			}
+			User.Giving = append(User.Giving[:index], User.Giving[index+1:]...)
+				Taker.Asking = append(Taker.Asking[:index], Taker.Asking[index+1:]...)
 
+				finalUserAsBytes,err := json.Marshal(User)
+	if err!=nil{
+		return shim.Error("couldnt marshal user back"+err.Error())
+	}
+	finalTakerAsBytes,err := json.Marshal(Taker)
+	if err!=nil {
+		return shim.Error("couldnt marshal taker")
+	}
+
+	err = store(stub,userAddress,finalUserAsBytes,true)
+	err = store(stub,takerId,finalTakerAsBytes,true)
+	if err!=nil{
+		return shim.Error("couldnt put state ",err.Error())
+	}
+
+
+
+		}else{
+			User.Giving = append(User.Giving[:index], User.Giving[index+1:]...)
+			Taker.Asking = append(Taker.Asking[:index], Taker.Asking[index+1:]...)
+		
+			finalUserAsBytes,err := json.Marshal(User)
+			if err!=nil{
+				return shim.Error("couldnt marshal user back"+err.Error())
+			}
+			finalTakerAsBytes,err := json.Marshal(Taker)
+			if err!=nil {
+				return shim.Error("couldnt marshal taker")
+			}
+		
+			err = store(stub,userAddress,finalUserAsBytes,true)
+			err = store(stub,takerId,finalTakerAsBytes,true)
+			if err!=nil{
+				return shim.Error("couldnt put state ",err.Error())
+			}
+
+			return shim.Success(nil)
 
 
 		}
@@ -464,11 +507,12 @@ func (t *SimpleChaincode) GenerateBottle(stub shim.ChaincodeStubInterface) pb.Re
 
 func (t *SimpleChaincode) IncreaseRequiredCount(stub shim.ChaincodeStubInterface) pb.Response {
 
-	if len(args)!=1{
+	if len(args)!=2{
 		return shim.Error("need 1 args as blood group type")
 	}
 
-	bloodGroup = args[0]
+	bloodGroup := args[0]
+	whatToDo := args[1]
 	userAddress,err := getAccountAddress(stub)
 	if err!=nil{
 		return shim.Error(err.Error())
@@ -484,8 +528,11 @@ func (t *SimpleChaincode) IncreaseRequiredCount(stub shim.ChaincodeStubInterface
 	if err!=nil{
 		return shim.Error("COULDNT UNMARSHAL BANKs")
 	}
-
+	if whatToDo == "INCREASE"{
 	User.CurrentRequirement[bloodGroup]+=1;
+	}else if whatToDo == "DECREASE" {
+		User.CurrentRequirement[bloodGroup]-=1;
+	}
 
 	finalUserAsBytes,err = json.Marshal(User)
 	if err!=nil{
