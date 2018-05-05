@@ -21,8 +21,8 @@ type user struct {
 	ContactPerson string `json:"currentPerson"`
 	Region string `json:"region"`
 	Type string `json:"type"`
-	Requesting []string `json:"requesting"`
-	Requested  []string `json:"requested"`
+	Asking []string `json:"Asking"`
+	Giving  []string `json:"Giving"`
 	
 }
 

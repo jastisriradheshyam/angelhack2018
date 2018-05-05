@@ -19,13 +19,13 @@ func (t *SimpleChaincode) RespondToRequest(stub shim.ChaincodeStubInterface) pb.
 			return shim.Error(err.Error())
 		}
 
-	userAsBytes,err := fetch(stub,fromUser,true)
-	if err!=nil {
-		return shim.Error("COULNT GETSTATE USER"+err.Error())
-	}
+	// userAsBytes,err := fetch(stub,fromUser,true)
+	// if err!=nil {
+	// 	return shim.Error("COULNT GETSTATE USER"+err.Error())
+	// }
 
 	User := user{}
-	Donator := user{}
+
 
 	donatorAsBytes,err :=fetch(stub,userAddress,true)
 	if err!=nil {
@@ -34,9 +34,65 @@ func (t *SimpleChaincode) RespondToRequest(stub shim.ChaincodeStubInterface) pb.
 
 	err = json.Unmarshal(donatorAsBytes,&Donator)
 
+	mystr := User.Giving[index]
+		words := strings.Fields(mystr)
+		bloodGroup := words[0]
+		takerId := words[2]
+		bottleCount := words[1]
+
+		Taker := user{}
+
+
+	takerAsBytes,err :=fetch(stub,takerId,true)
+	if err!=nil {
+		return shim.Error(err.Error())
+	}
+
+	err = json.Unmarshal(takerAsBytes,&Taker)
 
 
 	if response == RESPONSE_CANCEL{
+
+	User.Giving = append(User.Giving[:i], User.Giving[i+1:]...)
+	Taker.Asking = append(Taker.Asking[:i], Taker.Asking[i+1:]...)
+
+	finalUserAsBytes,err := json.Marshal(User)
+	if err!=nil{
+		return shim.Error("couldnt marshal user back"+err.Error())
+	}
+	finalTakerAsBytes,err := json.Marshal(Taker)
+	if err!=nil {
+		return shim.Error("couldnt marshal taker")
+	}
+
+	err = store(stub,userAddress,finalUserAsBytes,true)
+	err = store(stub,takerId,finalTakerAsBytes,true)
+	if err!=nil{
+		return shim.Error("couldnt put state ",err.Error())
+	}
+
+
+
+	
+		
+
+
+	}else if response == RESPONSE_PROVIDE {
+
+		if User.CurrentStock[bloodGroup].Count > (User.CurrentStock[bloodGroup].MustCount+User.CurrentRequirement[bloodGroup]+bottleCount) {
+
+			for i:=0;i<bottleCount;i++{
+				User.CurrentStock[bloodGroup].BottleMap = append(User.CurrentStock[bloodGroup].BottleMap[:0], User.CurrentStock[bloodGroup].BottleMap[1:]...)
+
+
+
+			}
+
+
+
+		}
+
+
 
 	}
 
@@ -111,9 +167,9 @@ func (t *SimpleChaincode) RequestForBottle(stub shim.ChaincodeStubInterface) pb.
 		return shim.Error("COULDNT UNMARSHAL reciever")
 	}
 
-	User.Requested = append( User.Requested ,BloodGroup+" "+fmt.Sprint(numberOfBottles)+" " + userAddress+ " ")
+	User.Asking = append( User.Asking ,BloodGroup+" "+fmt.Sprint(numberOfBottles)+" " + userAddress+ " ")
 	
-	Donator.Requesting = append(Donator.Requesting,BloodGroup+" "+fmt.Sprint(numberOfBottles)+" " + userAddress+ " ")
+	Donator.Giving = append(Donator.Giving,BloodGroup+" "+fmt.Sprint(numberOfBottles)+" " + userAddress+ " ")
 
 	finalUserAsBytes,err:= json.Marshal(User)
 	if err!=nil {
