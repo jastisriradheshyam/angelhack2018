@@ -1,4 +1,21 @@
 package main
+import (
+"bytes"
+	"crypto/sha256"
+	"crypto/x509"
+	"encoding/hex"
+	"encoding/json"
+	"encoding/pem"
+	"errors"
+	"fmt"
+	"strconv"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/hyperledger/fabric/core/chaincode/shim"
+	mspprotos "github.com/hyperledger/fabric/protos/msp"
+	pb "github.com/hyperledger/fabric/protos/peer"
+)
+
 
 const TYPE_BLOODBANK string = "BLOOD_BANK"
 const STATUS_ACTIVE string =="ACTIVE"
@@ -82,8 +99,20 @@ func (t *SimpleChaincode) RespondToRequest(stub shim.ChaincodeStubInterface) pb.
 		if User.CurrentStock[bloodGroup].Count > (User.CurrentStock[bloodGroup].MustCount+User.CurrentRequirement[bloodGroup]+bottleCount) {
 
 			for i:=0;i<bottleCount;i++{
+				bottleId := User.CurrentStock[bloodGroup].BottleMap[0]
+				bottleAsBytes,err := fetch(stub,bottleId,true)
+				if err!=nil {
+					return shim.Error("NO BOTTLE FOUND ")
+				}
+				Bottle:= bottle{}
+				err = json.Marshal(bottleAsBytes,&Bottle)
+				if err!=nil {
+					return shim.Error("COULDNT MARSHAL BOTTLE",err.Error())
+				}
+				Bottle.CurrentOwner = takerId
+				Bottle.Trail += "BOTTLE HAS BEEN TRANSFERED TO "+ takerId.ContactPerson;
 				User.CurrentStock[bloodGroup].BottleMap = append(User.CurrentStock[bloodGroup].BottleMap[:0], User.CurrentStock[bloodGroup].BottleMap[1:]...)
-
+				
 
 
 			}
