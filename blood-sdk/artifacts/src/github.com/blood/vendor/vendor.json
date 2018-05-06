@@ -1,0 +1,19 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "WX1+2gktHcBmE9MGwFSGs7oqexU=",
+			"path": "github.com/golang/protobuf/proto",
+			"revision": "bbd03ef6da3a115852eaf24c8a1c46aeb39aa175",
+			"revisionTime": "2018-02-02T18:43:18Z"
+		},
+		{
+			"checksumSHA1": "CyBIW6JzdsObZEmbRgruKsmhUEQ=",
+			"path": "github.com/hyperledger/fabric/protos/msp",
+			"revision": "3c3841500f7cb952204907abebc6fb4070a9b1d4",
+			"revisionTime": "2018-02-22T01:38:58Z"
+		}
+	],
+	"rootPath": "blood"
+}
