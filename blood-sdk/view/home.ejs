@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+  </head>
+
+<body>
+    <div class="container" style="text-align:center;">
+        <h1 class="h1-responsive" style="color:#565656;">Welcome To Network Panel !</h1>
+
+    </div>
+
+    <div class="row container" style="margin-top:10px; margin-left:120px;">
+        <div class="col-md-6 card bg-primary" style="color:#565656;">
+            <div class="card-header"  style="color:white;" >Hospital - A</div>
+            <div class="card-body" style="background: #cccccc">
+                <div>
+                    <h6 style="display:inline;float:left;">Contact Person:</h6>
+                    <h6 style="display:inline;float:left;"><%= posts.cp_name_1 %></h6>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>B Group</th>
+                            <th>Count</th>
+                            <th>Requires</th>
+                            <th>Request</tr>
+                            <th>Update</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><% hos_1.forEach((post) => { %>
+                            <tr>
+                            <td><%= post.grp %> </td>
+                              <td><%= post.count %></td>
+                              <td><%= post.requires %></td>
+                              <td><button class="btn btn-success" data-toggle="modal" data-target="#RequestModal1">Request</button></td>
+                              <td><button class="btn btn-success" data-toggle="modal" data-target="#myModal">Update</button></td>
+                            </tr>
+                              <% }) %>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-6 card bg-success" style="color:#565656;">
+                <div class="card-header"  style="color:white;">Hospital - B</div>
+                <div class="card-body" style="background: #cccccc">
+                    <div>
+                        <h6 style="display:inline;float:left;">Contact Person:</h6>
+                        <h6 style="display:inline;float:left;"><%= posts.cp_name_2 %></h6>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>B Group</th>
+                                <th>Count</th>
+                                <th>Requires</th>
+                                <th>Request</tr>
+                                <th>Update</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                    <% hos_2.forEach((post) => { %>
+                                        <tr>
+                                        <td><%= post.grp %> </td>
+                                          <td><%= post.count %></td>
+                                          <td><%= post.requires %></td>
+                                          <td><button class="btn btn-success" data-toggle="modal" data-target="#RequestModal1">Request</button></td>
+                                          <td><button class="btn btn-success" data-toggle="modal" data-target="#myModal">Update</button></td>
+                                        </tr>
+                                          <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    </div>
+
+    <div class="row container" style="margin-top:10px; margin-left:120px;">
+            <div class="col-md-6 card bg-warning" style="color:#565656;">
+                    <div class="card-header"  style="color:white;" >Hospital - C</div>
+                    <div class="card-body" style="background: #cccccc">
+                        <div>
+                            <h6 style="display:inline;float:left;">Contact Person:</h6>
+                            <h6 style="display:inline;float:left;"><%= posts.cp_name_3 %></h6>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>B Group</th>
+                                    <th>Count</th>
+                                    <th>Requires</th>
+                                    <th>Request</tr>
+                                    <th>Update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                        <% hos_3.forEach((post) => { %>
+                                            <tr>
+                                            <td><%= post.grp %> </td>
+                                              <td><%= post.count %></td>
+                                              <td><%= post.requires %></td>
+                                              <td><button class="btn btn-success" data-toggle="modal" data-target="#RequestModal1">Request</button></td>
+                                              <td><button class="btn btn-success" data-toggle="modal" data-target="#myModal">Update</button></td>
+                                            </tr>
+                                              <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6 card bg-danger" style="color:#565656;">
+                        <div class="card-header" style="color:white;">Hospital - D</div>
+                        <div class="card-body" style="background: #cccccc">
+                            <div>
+                                <h6 style="display:inline;float:left;">Contact Person:</h6>
+                                <h6 style="display:inline;float:left;"><%= posts.cp_name_4 %></h6>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>B Group</th>
+                                        <th>Count</th>
+                                        <th>Requires</th>
+                                        <th>Request</tr>
+                                        <th>Update</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        <% hos_4.forEach((post) => { %>
+                                            <tr>
+                                            <td><%= post.grp %> </td>
+                                              <td><%= post.count %></td>
+                                              <td><%= post.requires %></td>
+                                              <td><button class="btn btn-success" data-toggle="modal" data-target="#RequestModal1">Request</button></td>
+                                              <td><button class="btn btn-success" data-toggle="modal" data-target="#myModal">Update</button></td>
+                                            </tr>
+                                              <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+        <!-- The Modal -->
+        <div class="modal" id="myModal">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                  
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                      <h4 class="modal-title">Update Requirements</h4>
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                      <button class="btn btn-primary">
+                          Up
+                      </button>
+                      <button class="btn btn-primary">
+                            Down
+                        </button>
+                    </div>
+                    
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                    
+                  </div>
+                </div>
+        </div>
+        <!-- The Modal -->
+        <div class="modal" id="RequestModal1">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                  
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                      <h4 class="modal-title">Request Blood</h4>
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                            <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Hospital Name</th>
+                                            <th>Excess</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>John</td>
+                                            <td>23</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            <button class="btn btn-success">Request</button>
+                    </div>
+                    
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                    
+                  </div>
+                </div>
+        </div>
+    </div>
+</body>
+<script>
+    ip = "10.1.201.106";
+    console.log("hello max");
+  setTimeout(function(){
+    location.reload(true);
+    //location = ''
+  },6000)
+</script>
+</script>
+</html>
