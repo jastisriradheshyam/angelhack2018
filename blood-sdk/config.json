@@ -1,14 +1,19 @@
 {
-   "host":"localhost",
-   "port":"4000",
-   "jwt_expiretime": "36000",
-   "channelName":"mychannel",
-   "CC_SRC_PATH":"../artifacts",
-   "eventWaitTime":"30000",
-   "admins":[
-      {
-         "username":"admin",
-         "secret":"adminpw"
-      }
-   ]
-}
+    "host":"localhost",
+    "port":"3211",
+    "jwt_expiretime": "36000",
+    "channelName":"mychannel",
+    "chaincodeName":"blood6",
+    "CC_SRC_PATH":"../artifacts",
+    "eventWaitTime":"30000",
+    "hospitalOrg":"Org1",
+    "bankOrg":"Org1",
+    "org1Peer":["peer0.org1.example.com","peer1.org1.example.com"],
+    "org2Peer":["peer0.org2.example.com","peer1.org2.example.com"],
+    "admins":[
+       {
+          "username":"admin",
+          "secret":"adminpw"
+       }
+    ]
+ }

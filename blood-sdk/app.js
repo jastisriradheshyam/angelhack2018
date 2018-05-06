@@ -40,6 +40,7 @@ var invoke = require('./app/invoke-transaction.js');
 var query = require('./app/query.js');
 var host = process.env.HOST || hfc.getConfigSetting('host');
 var port = process.env.PORT || hfc.getConfigSetting('port');
+var config = require('./config.json')
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// SET CONFIGURATONS ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,6 +52,123 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: false
 }));
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views');
+app.use(express.static("style"));
+
+app.get('/', async function(req,res){
+
+	var peer = "peer0.org1.example.com"
+	var args = []
+	var fcn = "displayAllData"
+
+
+	let message = await query.queryChaincode(peer, config.channelName, config.chaincodeName, args, fcn, "user05@Bank", config.bankOrg);
+	console.log(message)
+	return res.send(message);
+	return res.render('home',{post:message})
+
+})
+
+
+
+app.get('/requestForBottle',function(req,res){
+
+	var peer = "peer0.org1.example.com"
+	var args = 
+	var fcn = "displayAllData"
+
+
+	let message = await query.queryChaincode(peer, config.channelName, config.chaincodeName, args, fcn, "user05@Bank", config.bankOrg);
+	console.log(message)
+	return res.send(message);
+	return res.render('home',{post:message})
+
+})
+
+
+
+app.get('/initUsers', async function(req, res) {
+	var hospital = "user05@hospital"
+	var bloodBank = "user05@Bank"
+	var peers;
+	var fcn = "initUser"
+
+	var hospitalObj = {}
+
+	for (var i=1;i<4;i++){
+		var username = hospital+""+i
+		var orgName = hfc.getConfigSetting('hospitalOrg')
+		var token = jwt.sign({
+			exp: Math.floor(Date.now() / 1000) + parseInt(hfc.getConfigSetting('jwt_expiretime')),
+			username: username,
+			orgName: orgName
+		}, app.get('secret'));
+		let response = await helper.getRegisteredUser(username, orgName , true);
+		logger.debug('-- returned from registering the username %s for organization %s',username,orgName);
+		if (response && typeof response !== 'string') {
+			logger.debug('Successfully registered the username %s for organization %s',username,orgName);
+			response.token = token;
+			
+			var args = []
+			args[0] = "HOPITAL "+i+"st"
+			args[1] = "HOPITAL"
+			let message = await invoke.invokeChaincode(config.org1Peer, config.channelName, config.chaincodeName, fcn, args, username, orgName);
+			if(message.indexOf('Error')>=0 || message.indexOf('error')>=0 ) {
+				hospitalObj[i] = response+"              "+ message
+			}else {
+				hospitalObj[i] = response+"              "+ message
+			}
+
+			
+
+
+			//res.json(response);
+		} else {
+			logger.debug('Failed to register the username %s for organization %s with::%s',username,orgName,response);
+			hospitalObj[i] = "failed"
+		}
+
+	}
+
+		username = bloodBank
+		orgName = config.bankOrg
+		 token = jwt.sign({
+			exp: Math.floor(Date.now() / 1000) + parseInt(hfc.getConfigSetting('jwt_expiretime')),
+			username: username,
+			orgName: orgName
+		}, app.get('secret'));
+		let bankResponse = await helper.getRegisteredUser(username, orgName , true);
+		logger.debug('-- returned from registering the username %s for organization %s',username,orgName);
+		if (response && typeof response !== 'string') {
+			logger.debug('Successfully registered the username %s for organization %s',username,orgName);
+			response.token = token;
+			
+			var args = []
+			args[0] = "RED CROSS BANK "
+			args[1] = "BLOODBANK"
+			let message = await invoke.invokeChaincode(config.org1Peer, config.channelName, config.chaincodeName, fcn, args, username, orgName);
+			if(message.indexOf('Error')>=0 || message.indexOf('error')>=0 ) {
+				hospitalObj["bank"] = response+"              "+ message
+			}else {
+				hospitalObj["bank"] = response+"              "+ message
+			}
+
+		}
+	return res.send(hospitalObj);
+
+
+
+	
+
+
+
+	
+
+});
+
+
+
 // set secret variable
 app.set('secret', 'thisismysecret');
 app.use(expressJWT({

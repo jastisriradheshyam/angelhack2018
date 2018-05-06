@@ -11,6 +11,10 @@ import (
 type SimpleChaincode struct {
 }
 
+const USER_TYPE_HOSPITAL string = "HOSPITAL"
+const USER_TYPE_BANK string = "BLOODBANK"
+const USER_LIST string = "USER_LIST"
+
 // ===================================================================================
 func main() {
 	err := shim.Start(new(SimpleChaincode))
@@ -22,6 +26,9 @@ func main() {
 // Init initializes chaincode
 // ===========================
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
+
+
+
 	return shim.Success(nil)
 }
 
@@ -89,7 +96,12 @@ func (t *SimpleChaincode) InitUser(stub shim.ChaincodeStubInterface, args []stri
 		return shim.Error("COULDNT REGISTER USER"+ err.Error())
 	}
 
-	err = store(stub, userAddress, userAsBytes, false)
+	err  = store(stub,USER_LIST+" "+email,[]byte(userAddress),true)
+	if err!=nil{
+		return shim.Error(err.Error())
+	}
+
+	err = store(stub, userAddress, userAsBytes, true)
 	if err != nil {
 		return shim.Error(err.Error())
 	}

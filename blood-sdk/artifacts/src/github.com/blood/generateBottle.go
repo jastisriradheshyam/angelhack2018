@@ -439,23 +439,61 @@ func (t *SimpleChaincode) GetById(stub shim.ChaincodeStubInterface, args []strin
 
 
 func (t *SimpleChaincode) DisplayAllData(stub shim.ChaincodeStubInterface,args []string) pb.Response {
-	var buffer bytes.Buffer
-	buffer.WriteString("[")
-	var mybool bool = false
-	for i:=0;i<len(args);i++{
 
-		userData,err := fetch(stub,args[0],false)
-		if err!=nil {
-			return shim.Error("user not found"+err.Error())
+	resultsIterator, err := stub.GetStateByRange(USER_LIST+"", USER_LIST+"~")
+	if err != nil {
+		return shim.Error(returnError("chaincode:QueryPolicyByRange::ERROR02", "couldnt marshal districtArray").Error())
+	}
+	var buffer bytes.Buffer
+	buffer.WriteString(`[`)
+	requiredCount := 4
+	bArrayMemberAlreadyWritten := false
+	count := 0
+	for resultsIterator.HasNext() {
+		if count >= requiredCount {
+			break
 		}
-		buffer.Write(userData)
-		mybool=true
-		if mybool{
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		// Add a comma before array members, suppress it for the first array member
+		if bArrayMemberAlreadyWritten == true {
 			buffer.WriteString(",")
 		}
 
+		userAsBytes, err := fetch(stub, string(queryResponse.Value), true)
+		if err != nil || len(userAsBytes) == 0 {
+			return shim.Error(err.Error())
+		}
+		// buffer.WriteString("{\"key\":\"" + queryResponse.Key + "\"},")
+		buffer.Write(userAsBytes)
+		bArrayMemberAlreadyWritten = true
+		count++
 
 	}
+
+
+
+
+
+	// var buffer bytes.Buffer
+	// buffer.WriteString("[")
+	// var mybool bool = false
+	// for i:=0;i<len(args);i++{
+
+	// 	userData,err := fetch(stub,args[0],false)
+	// 	if err!=nil {
+	// 		return shim.Error("user not found"+err.Error())
+	// 	}
+	// 	buffer.Write(userData)
+	// 	mybool=true
+	// 	if mybool{
+	// 		buffer.WriteString(",")
+	// 	}
+
+
+	// }
 	buffer.WriteString("]")
 
 	return shim.Success(buffer.Bytes())
